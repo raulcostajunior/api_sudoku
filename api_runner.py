@@ -14,8 +14,8 @@ def index():
                         <style> body { margin: 0; padding: 0; } </style>
                     </head>
                     <body>
-                        <redoc spec-url='./swagger.json' hide-loading></redoc>
-                        <script src="https://rebilly.github.io/ReDoc/releases/latest/redoc.min.js"> </script>
+                        <redoc spec-url='https://raw.githubusercontent.com/raulcostajunior/api_sudoku/master/swagger.json' hide-loading></redoc>
+                        <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
                     </body>
                     </html> """
     resp = make_response(resp_body, 200)

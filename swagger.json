@@ -1,0 +1,55 @@
+{
+    "info": {
+        "description": "Python extension for generating and solving Sudoku puzzles - based on libsudoku.",
+        "title": "py_libsudoku",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/v1/board/state-flags": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "board",
+                        "in": "body",
+                        "description": "board to evaluate",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BoardFlagsSchema"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "invalid board parameter"
+                    }
+                }
+            }
+        }
+    },
+    "openapi": "3.0.2",
+    "components": {
+        "schemas": {
+            "BoardFlagsSchema": {
+                "type": "object",
+                "properties": {
+                    "isEmpty": {
+                        "type": "boolean"
+                    },
+                    "isComplete": {
+                        "type": "boolean"
+                    },
+                    "isValid": {
+                        "type": "boolean"
+                    }
+                }
+            }
+        }
+    }
+}

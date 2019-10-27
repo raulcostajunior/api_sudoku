@@ -15,9 +15,9 @@ def handle_invalid_usage(error):
 def index():
     """Display of api documentation at the root endpoint.
        
-       To generate the api documentation, run python open_api.py
+       To generate the api documentation, run 'python open_api.py'
        from an environment with all the dependencies in 
-       requirements_dev.txt fullfilled.
+       'requirements_dev.txt' fullfilled.
     """
     resp_body = """ <html>
                     <head>

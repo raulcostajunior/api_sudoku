@@ -8,10 +8,10 @@ app.register_blueprint(rest_api, url_prefix='/v1')
 def index():
     resp_body = """ <html>
                     <head>
-                        <title>Cool API Documentation</title>
+                        <title>py_libsudoku API</title>
                         <meta charset="utf-8"/>
                         <meta name="viewport" content="width=device-width, initial-scale=1">
-                        <style> body { margin: 0; padding: 0; } </style>
+                        <!-- <style> body { margin: 0; padding: 0; } </style> -->
                     </head>
                     <body>
                         <redoc spec-url='https://raw.githubusercontent.com/raulcostajunior/api_sudoku/master/swagger.json' hide-loading></redoc>

@@ -8,7 +8,7 @@ def get_board_state_flags():
     """Retrieves the state flags of a given board (the board goes in JSON format in the body).
     ---
     get:
-        description: Retrieves the state flags of a given board
+        summary: Retrieves the state flags of a given board
         parameters:
             - name: board
               in: body

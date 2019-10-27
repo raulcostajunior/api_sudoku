@@ -17,6 +17,8 @@ Development requirements for **api_sudoku** can be installed with:
     
 The **requirements_dev.txt** adds dependencies on **pylint** and on packages used to generate the api documentation - namely  **marshmallow**, **apispec** and **apispec-webframeworks**.
 
+## Running
+
 To run the api using Flask's development server:
 
     export FLASK_APP=api_runner.py

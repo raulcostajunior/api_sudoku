@@ -33,7 +33,7 @@
                         }
                     },
                     "400": {
-                        "description": "invalid board parameter"
+                        "description": "bad request (invalid request body)"
                     }
                 }
             }

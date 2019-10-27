@@ -1,5 +1,5 @@
-from api import rest_api
-from flask import request, jsonify, make_response
+from api import rest_api, InvalidUsage
+from flask import abort, request, Response, jsonify
 
 import py_libsudoku as lsdk 
 
@@ -23,13 +23,17 @@ def get_board_state_flags():
                 application/json:
                   schema: BoardFlagsSchema
             400:
-              description: invalid board parameter
+              description: bad request (invalid request body)
     """
-    body = request.get_json()
-    b = lsdk.Board(body["board"])
-    d = {
-        "isValid": b.isValid,
-        "isEmpty": b.isEmpty,
-        "isComplete": b.isComplete,
+    try:
+        body = request.get_json()
+        b = lsdk.Board(body["board"])
+        d = {
+            "isValid": b.isValid,
+            "isEmpty": b.isEmpty,
+            "isComplete": b.isComplete,
         }
-    return jsonify(d)
+        return jsonify(d)
+    except Exception as e:
+        raise(InvalidUsage("Bad request: {}".format(str(e)), 400))
+

@@ -1,11 +1,24 @@
-from flask import Flask, make_response
-from api import rest_api
+from flask import Flask, jsonify, make_response
+from api import rest_api, InvalidUsage
 
 app = Flask(__name__)
 app.register_blueprint(rest_api, url_prefix='/v1')
 
+@app.errorhandler(InvalidUsage)
+def handle_invalid_usage(error):
+    """Custom error handler for invalid api usage."""
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
+
 @app.route("/")
 def index():
+    """Display of api documentation at the root endpoint.
+       
+       To generate the api documentation, run python open_api.py
+       from an environment with all the dependencies in 
+       requirements_dev.txt fullfilled.
+    """
     resp_body = """ <html>
                     <head>
                         <title>py_libsudoku API</title>

@@ -1,5 +1,5 @@
 from api import rest_api, InvalidUsage
-from flask import abort, request, Response, jsonify
+from flask import request, Response, jsonify
 
 import py_libsudoku as lsdk 
 

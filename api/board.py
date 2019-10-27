@@ -9,7 +9,6 @@ def get_board_state_flags():
     ---
     get:
         tags:
-          - v1.0.0
           - Boards
         summary: Retrieves the state flags of a given board
         requestBody:

@@ -7,7 +7,9 @@ spec = APISpec(
     version="1.0.0",
     openapi_version="3.0.2",
     info=dict(
-        description="Python extension for generating and solving Sudoku puzzles - based on libsudoku."
+        description=
+           "Python extension for generating and solving Sudoku puzzles. "
+           "Based on C++ [libsudoku](https://github.com/raulcostajunior/libsudoku)."
     ),
     plugins=[FlaskPlugin(), MarshmallowPlugin()],
 )

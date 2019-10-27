@@ -1,6 +1,6 @@
 {
     "info": {
-        "description": "Python extension for generating and solving Sudoku puzzles - based on libsudoku.",
+        "description": "Python extension for generating and solving Sudoku puzzles. Based on C++ [libsudoku](https://github.com/raulcostajunior/libsudoku).",
         "title": "py_libsudoku",
         "version": "1.0.0"
     },
@@ -8,7 +8,6 @@
         "/v1/board/state-flags": {
             "get": {
                 "tags": [
-                    "v1.0.0",
                     "Boards"
                 ],
                 "summary": "Retrieves the state flags of a given board",
@@ -60,10 +59,10 @@
             "BoardFlags": {
                 "type": "object",
                 "properties": {
-                    "isComplete": {
+                    "isValid": {
                         "type": "boolean"
                     },
-                    "isValid": {
+                    "isComplete": {
                         "type": "boolean"
                     },
                     "isEmpty": {

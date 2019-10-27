@@ -8,6 +8,7 @@
         "/v1/board/state-flags": {
             "get": {
                 "tags": [
+                    "v1.0.0",
                     "Boards"
                 ],
                 "summary": "Retrieves the state flags of a given board",
@@ -17,7 +18,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/BoardSchema"
+                                "$ref": "#/components/schemas/Board"
                             }
                         }
                     }
@@ -27,7 +28,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/BoardFlagsSchema"
+                                    "$ref": "#/components/schemas/BoardFlags"
                                 }
                             }
                         }
@@ -42,20 +43,30 @@
     "openapi": "3.0.2",
     "components": {
         "schemas": {
-            "BoardSchema": {
-                "type": "object",
-                "properties": {}
-            },
-            "BoardFlagsSchema": {
+            "Board": {
                 "type": "object",
                 "properties": {
+                    "board": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0,
+                            "maximum": 9
+                        }
+                    }
+                }
+            },
+            "BoardFlags": {
+                "type": "object",
+                "properties": {
+                    "isComplete": {
+                        "type": "boolean"
+                    },
                     "isValid": {
                         "type": "boolean"
                     },
                     "isEmpty": {
-                        "type": "boolean"
-                    },
-                    "isComplete": {
                         "type": "boolean"
                     }
                 }

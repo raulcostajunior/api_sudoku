@@ -12,21 +12,9 @@ spec = APISpec(
     plugins=[FlaskPlugin(), MarshmallowPlugin()],
 )
 
-from marshmallow import Schema, fields
-
-class BoardSchema(Schema):
-    board: fields.List(fields.Integer(), required=True)
-
-class BoardFlagsSchema(Schema):
-    isValid = fields.Bool()
-    isComplete = fields.Bool()
-    isEmpty = fields.Bool()
-
-spec.components.schema("BoardSchema", schema=BoardSchema)
-spec.components.schema("BoardFlagsSchema", schema=BoardFlagsSchema)
-
 from api_runner import app
 from api.board import get_board_state_flags
+from api.board_schemas import BoardSchema, BoardFlagsSchema
 
 with app.test_request_context():
     spec.path(view=get_board_state_flags)

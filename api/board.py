@@ -8,13 +8,24 @@ def get_board_state_flags():
     """Retrieves the state flags of a given board (the board goes in JSON format in the body).
     ---
     get:
+        tags:
+          - Boards
         summary: Retrieves the state flags of a given board
-        parameters:
-            - name: board
-              in: body
-              description: board to evaluate
-              type: string
-              required: true
+        requestBody:
+            description: The board to be evaluated
+            required: true
+            content:
+              application/json:
+                type: object
+                properties:
+                  board:
+                    type: array
+                    items:
+                      type: integer
+                      minimum: 0
+                      maximum: 9
+                      minItems: 1
+                      maxItems: 81
         responses:
             200:
               content:

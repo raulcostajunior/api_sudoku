@@ -16,16 +16,7 @@ def get_board_state_flags():
             required: true
             content:
               application/json:
-                type: object
-                properties:
-                  board:
-                    type: array
-                    items:
-                      type: integer
-                      minimum: 0
-                      maximum: 9
-                      minItems: 1
-                      maxItems: 81
+                schema: BoardSchema
         responses:
             200:
               content:

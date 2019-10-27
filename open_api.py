@@ -14,11 +14,15 @@ spec = APISpec(
 
 from marshmallow import Schema, fields
 
+class BoardSchema(Schema):
+    board: fields.List(fields.Integer(), required=True)
+
 class BoardFlagsSchema(Schema):
     isValid = fields.Bool()
     isComplete = fields.Bool()
     isEmpty = fields.Bool()
 
+spec.components.schema("BoardSchema", schema=BoardSchema)
 spec.components.schema("BoardFlagsSchema", schema=BoardFlagsSchema)
 
 from api_runner import app

@@ -37,6 +37,39 @@
                     }
                 }
             }
+        },
+        "/v1/solved-board/": {
+            "post": {
+                "tags": [
+                    "Solved Boards"
+                ],
+                "summary": "Returns one solution for a given board.",
+                "requestBody": {
+                    "description": "The board to be solved",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Board"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Board"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "bad request (invalid request body)"
+                    }
+                }
+            }
         }
     },
     "openapi": "3.0.2",
@@ -59,13 +92,13 @@
             "BoardFlags": {
                 "type": "object",
                 "properties": {
+                    "isEmpty": {
+                        "type": "boolean"
+                    },
                     "isValid": {
                         "type": "boolean"
                     },
                     "isComplete": {
-                        "type": "boolean"
-                    },
-                    "isEmpty": {
                         "type": "boolean"
                     }
                 }

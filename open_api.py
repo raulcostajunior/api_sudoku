@@ -17,9 +17,11 @@ spec = APISpec(
 from api_runner import app
 from api.board import get_board_state_flags
 from api.board_schemas import BoardSchema, BoardFlagsSchema
+from api.solved_board import create_solved_board
 
 with app.test_request_context():
     spec.path(view=get_board_state_flags)
+    spec.path(view=create_solved_board)
 
 import json
 with open("swagger.json", "w") as f:

@@ -38,10 +38,6 @@ def create_solved_board():
         raise(InvalidUsage("Bad request: {}".format(str(e)), 400))
 
     if result == lsdk.SolverResult.NO_ERROR:
-        s_values = [v for v in s]
-        d = {
-          "board": s_values
-        }
-        return jsonify(d)
+        return jsonify({"board" : [v for v in s]})
     else:
         raise(InvalidUsage("Not solvable: {}".format(result), 400))

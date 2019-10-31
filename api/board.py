@@ -19,11 +19,12 @@ def get_board_state_flags():
                 schema: BoardSchema
         responses:
             200:
+              description: Values of the state flags
               content:
                 application/json:
                   schema: BoardFlagsSchema
             400:
-              description: bad request (invalid request body)
+              description: Error detail in "message".
     """
     try:
         body = request.get_json()

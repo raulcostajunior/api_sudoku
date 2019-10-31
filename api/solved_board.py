@@ -19,11 +19,12 @@ def create_solved_board():
                 schema: BoardSchema
         responses:
             200:
+              description: A solution for the given board
               content:
                 application/json:
                   schema: BoardSchema
             400:
-              description: bad request (invalid request body)
+              description: Error detail in "message".
     """
     s = lsdk.Board() # Board to hold the solution
     result = lsdk.SolverResult.NO_ERROR

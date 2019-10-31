@@ -24,6 +24,7 @@
                 },
                 "responses": {
                     "200": {
+                        "description": "Values of the state flags",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -33,7 +34,7 @@
                         }
                     },
                     "400": {
-                        "description": "bad request (invalid request body)"
+                        "description": "Error detail in \"message\"."
                     }
                 }
             }
@@ -57,6 +58,7 @@
                 },
                 "responses": {
                     "200": {
+                        "description": "A solution for the given board",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -66,7 +68,7 @@
                         }
                     },
                     "400": {
-                        "description": "bad request (invalid request body)"
+                        "description": "Error detail in \"message\"."
                     }
                 }
             }
@@ -92,13 +94,13 @@
             "BoardFlags": {
                 "type": "object",
                 "properties": {
-                    "isEmpty": {
-                        "type": "boolean"
-                    },
                     "isValid": {
                         "type": "boolean"
                     },
                     "isComplete": {
+                        "type": "boolean"
+                    },
+                    "isEmpty": {
                         "type": "boolean"
                     }
                 }

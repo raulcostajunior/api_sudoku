@@ -31,7 +31,11 @@ def post_board():
     try:
         dif_level = int(request.args.get("difficulty-level"))
     except:
-        raise (InvalidUsage("Bad request: 'difficulty-level' parameter required."))
+        raise (
+            InvalidUsage(
+                "Bad request: 'difficulty-level' parameter required with value in [1, 2, 3]."
+            )
+        )
     if dif_level < 1 or dif_level > 3:
         raise InvalidUsage(
             "Bad request: invalid difficulty level, '{}'".format(dif_level), 400

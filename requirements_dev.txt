@@ -12,7 +12,7 @@ lazy-object-proxy==1.4.2
 MarkupSafe==1.1.1
 marshmallow==3.2.1
 mccabe==0.6.1
-py-libsudoku==1.0.10
+py-libsudoku==1.0.12
 pylint==2.4.3
 pytz==2019.3
 PyYAML==5.1.2

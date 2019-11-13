@@ -1,3 +1,4 @@
+cmake
 aniso8601==8.0.0
 apispec==3.0.0
 apispec-webframeworks==0.5.0

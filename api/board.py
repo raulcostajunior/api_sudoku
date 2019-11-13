@@ -1,33 +1,32 @@
 from api import rest_api, InvalidUsage
 from flask import current_app, request, Response, jsonify
+from flask_executor import Executor
 
 import py_libsudoku as lsdk
-
-# List of board generation jobs.
-# Each entry is a dictionary with the following keys:
-#   "job_id": unique id of a generation job.
-#   "job_start_time": time the gen job started.
-#   "job_finish_time": time the gen job finished.
-#   "current_gen_step": current step of the generation job.
-#   "total_steps": total number of steps for the generation job.
-#   "gen_board": resulting generated board (None if the job isn't completed).
-gen_jobs = []
 
 # The id to use for the next board generation job.
 gen_job_id = 0
 
-# Maximum number of running generation jobs that can be running at a given
-# time.
-MAX_RUN_GEN_JOBS = 16
+# Executor to be lazily instantiated
+executor = None
 
-# Maximum time, in minutes, a generation job can be kept in the gen_jobs
-# list.
-MAX_GEN_JOB_AGE = 20
+
+def gen_board(difficulty_level, job_id):
+    """Generates a board with the given difficulty_level. 
+  Returns a dictionary with the following keys: 
+    . "gen_result": one of the values of GeneratorResult
+    . "gen_board": the generated board if any
+    . "start_time"
+    . "finish_time"
+  """
+    # TODO use job_id to keep track of progress information - the callback updates a structure indexed by job_id. That is the info returned by the progress tracking end-point.
+    pass
 
 
 @rest_api.route("board/", methods=["POST"])
 def post_board():
     global gen_job_id
+    global executor
     try:
         dif_level = int(request.args.get("difficulty-level"))
     except:
@@ -45,18 +44,13 @@ def post_board():
         board_level = lsdk.PuzzleDifficulty.EASY
     elif dif_level == 2:
         board_level = lsdk.PuzzleDifficulty.MEDIUM
-    # Clear all the "expired" jobs - those that have been started more than
-    # MAX_RUN_GEN_JOBS minutes ago, independently of their current status.
-    # Also gathers the number of non-expired running jobs.
-    running_jobs = 0
-    # TODO sweep the gen_jobs under a lock protection.
 
-    # TODO return a 503 if the maximum number of running jobs has been reached
-
+    # TODO - put the next three instructions under a lock protection
+    if not executor:
+        executor = Executor(current_app)
     gen_job_id += 1
-    # Captures the current job id to use in the progress callback.
     current_job_id = gen_job_id
-    # TODO launch the generation job on a background non daemon thread.
+    executor.submit_stored(str(current_job_id), gen_board, board_level, current_job_id)
 
     response = current_app.response_class(status=202)
     # TODO use the appropriate url reverting mechanism to generate the location

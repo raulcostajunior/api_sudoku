@@ -7,11 +7,11 @@ import py_libsudoku as lsdk
 # The id to use for the next board generation job.
 gen_job_id = 0
 
-# Executor to be lazily instantiated
+# Executor to be lazily instantiated.
 executor = None
 
 
-def gen_board(difficulty_level, job_id):
+def gen_board_worker(difficulty_level, gen_job_id):
     """Generates a board with the given difficulty_level. 
   Returns a dictionary with the following keys: 
     . "gen_result": one of the values of GeneratorResult
@@ -50,7 +50,7 @@ def post_board():
         executor = Executor(current_app)
     gen_job_id += 1
     current_job_id = gen_job_id
-    executor.submit_stored(str(current_job_id), gen_board, board_level, current_job_id)
+    executor.submit_stored(str(current_job_id), gen_board_worker, board_level, current_job_id)
 
     response = current_app.response_class(status=202)
     # TODO use the appropriate url reverting mechanism to generate the location

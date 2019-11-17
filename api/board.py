@@ -1,50 +1,40 @@
-from api import rest_api, InvalidUsage
+from api import (
+    create_executor_if_needed,
+    rest_api, InvalidUsage
+)
 from flask import (
     current_app, jsonify, make_response,
     request, Response, url_for
 )
 from flask_executor import Executor
 
-import threading
 import time
 import uuid
 
 import py_libsudoku as lsdk
-
-# The flask-executor that will be lazily instantiated
-executor = None
-# Lock to guarantee single lazy instantiation of executor
-executor_lock = threading.Lock()
-
-def create_executor_if_needed():
-    # Lazy instatiantion of the executor
-    global executor
-    global executor_lock
-    executor_lock.acquire()
-    if not executor:
-        executor = Executor(current_app)
-    executor_lock.release()
     
 @rest_api.route("board/gen-status/<job_id>")
 def get_gen_status(job_id):
-    create_executor_if_needed()
-    future = executor.futures.pop(job_id)
-    if not future:
-        return make_response(
+    executor = create_executor_if_needed()
+    fut = None
+    try:
+        fut = executor.futures._futures[job_id]
+    except KeyError:
+        return make_response (
             jsonify(
                 {"status": "no board generation for job-id '{}'".format(
                     job_id)},
-                404
-            )
-         )
-    elif not future.done():
+            ), 404
+        )
+    if not fut.done():
         return jsonify({"status": "generating"})
     else:
-        return jsonify(future.result())
+        fut = executor.futures.pop(job_id)
+        return jsonify(fut.result())
 
 
 @rest_api.route("board/", methods=["POST"])
-def post_board():
+def gen_board_async():
     try:
         dif_level = int(request.args.get("difficulty-level"))
     except:
@@ -64,7 +54,7 @@ def post_board():
     elif dif_level == 2:
         board_level = lsdk.PuzzleDifficulty.MEDIUM
 
-    create_executor_if_needed()
+    executor = create_executor_if_needed()
 
     # Invokes the generation worker giving a unique id to index the
     # corresponding future. This unique id will then be passed to the
@@ -155,12 +145,11 @@ def gen_board_worker(difficulty_level):
     fut_result = {
         # GenerationResult is not JSON serializable.
         # That's the reason for the str explicit conversion.
-        "gen_result": str(gen_result),
+        "status": str(gen_result),
         # Board is not JSON serializable.
         # That's the reason for the list compreheension
         "gen_board": [val for val in gen_board],
-        "start_time": start_time,
-        "finish_time": finish_time
+        "gen_time": finish_time - start_time
     }
 
     return fut_result

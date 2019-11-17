@@ -1,4 +1,7 @@
-from flask import Blueprint
+from flask import Blueprint, current_app
+from flask_executor import Executor
+
+import threading
 
 rest_api = Blueprint('api', __name__)
 
@@ -18,9 +21,24 @@ class InvalidUsage(Exception):
         rv['message'] = self.message
         return rv
 
+# The flask-executor that will be lazily instantiated
+executor = None
+# Lock to guarantee single lazy instantiation of executor
+executor_lock = threading.Lock()
+
+def create_executor_if_needed():
+    # Lazy instatiantion of the executor
+    global executor
+    global executor_lock
+    executor_lock.acquire()
+    if not executor:
+        executor = Executor(current_app)
+    executor_lock.release()
+    return executor
+
 
 # Expose the resources in the api to the runner Flask App.
-# Note: The import below must come after the definition of
-#       object rest_api, as the resource definition files
-#       make use of rest_api and of InvalidUsage. 
+# Note: The import below must come at the end of the file
+#       as the board and solved_board modules use the objects
+#       defined above.
 from . import board, solved_board

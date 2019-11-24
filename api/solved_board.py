@@ -1,5 +1,5 @@
 from api import (
-  create_executor_if_needed,
+  get_executor,
   rest_api, InvalidUsage
 )
 from flask import (
@@ -7,14 +7,58 @@ from flask import (
     request, Response, url_for
 )
 
+import threading
 import time
 import uuid
 
 import py_libsudoku as lsdk
 
+# job_info is a dictionary that has the job_id for key and another dictionary
+# as the value. The second level dictionary has the following keys:
+#  - cancel: either True or False to indicate the worker if it should stop or
+#            proceed to the end.
+#  - progress_percent: current progress percentage for the job (0.0 to 100.0)
+#  - num_solutions: number of solutions found so far.
+job_info = {}
+
+job_info_lock = threading.Lock()
+
+
+@rest_api.route('solved-board/all', methods=['POST'])
+def create_all_solved_boards_async():
+    global job_info
+    global job_info_lock
+    board = lsdk.Board()
+    try:
+        body = request.get_json()
+        board = lsdk.Board(body["board"]) # Board to solve
+    except Exception as e:
+        raise(InvalidUsage("Bad request: {}".format(str(e)), 400))
+
+    executor = get_executor()
+
+    # Invokes the solving worker giving a unique id to index the
+    # corresponding future. This unique id will then be passed to the
+    # solving status endpoint so it knows which future to query.
+    location_value = ""
+    current_job_id = str(uuid.uuid4())
+    with job_info_lock:
+        info = {"progress_percent":0.0, "num_solutions":0, "cancel":False}
+        job_info[current_job_id] = info
+    executor.submit_stored(current_job_id,
+                           solve_board_worker, board, current_job_id)
+
+    location_value = url_for('api.get_solve_status', job_id=current_job_id)
+    response = current_app.response_class(status=202)
+    response.headers["Location"] = location_value
+    return response
+
+
 @rest_api.route("solved-board/all/status/<job_id>")
 def get_solve_status(job_id):
-    executor = create_executor_if_needed()
+    global job_info
+    global job_info_lock
+    executor = get_executor()
     fut = None
     try:
         fut = executor.futures._futures[job_id]
@@ -26,38 +70,44 @@ def get_solve_status(job_id):
             ), 404
          )
     if not fut.done():
-        # TODO add progress info to the response body
-        return jsonify({"status": "solving"})
+        resp = {"status":"solving"}
+        with job_info_lock:
+            resp["progress_percent"] = job_info[job_id]["progress_percent"]
+            resp["num_solutions"] = job_info[job_id]["num_solutions"]
+        return jsonify(resp)
     else:
         fut = executor.futures.pop(job_id)
+        with job_info_lock:
+            job_info.pop(job_id)
         return jsonify(fut.result())
 
-# TODO Define cancel_async_solve endpoint
 
-@rest_api.route('solved-board/all', methods=['POST'])
-def create_all_solved_boards_async():
-    board = lsdk.Board()
+@rest_api.route("solved-board/all/<job_id>", methods=['DELETE'])
+def cancel_async_solve(job_id):
+    global job_info
+    global job_info_lock
+    executor = get_executor()
+    fut = None
     try:
-        body = request.get_json()
-        board = lsdk.Board(body["board"]) # Board to solve
-    except Exception as e:
-        raise(InvalidUsage("Bad request: {}".format(str(e)), 400))
-
-    executor = create_executor_if_needed()
-
-    # Invokes the solving worker giving a unique id to index the
-    # corresponding future. This unique id will then be passed to the
-    # solving status endpoint so it knows which future to query.
-    location_value = ""
-    current_job_id = str(uuid.uuid4())
-    executor.submit_stored(current_job_id,
-                           solve_board_worker, board)
-
-    location_value = url_for('api.get_solve_status', job_id=current_job_id)
-    response = current_app.response_class(status=202)
-    response.headers["Location"] = location_value
+        fut = executor.futures._futures[job_id]
+    except KeyError:
+        return make_response(
+            jsonify(
+                {"status": "no board solving to cancel for job-id '{}'".format(
+                    job_id)}), 404
+        )
+    if not fut.done():
+        # Marks the job to be stopped as soon as possible by the worker.
+        with job_info_lock:
+            job_info[job_id]["cancel"] = True
+    else: 
+        # The job has been done but a cancel has been invoked, there's a
+        # chance that no request for its result will come - do the clean-
+        # up from here.
+        executor.futures.pop(job_id)
+    response = current_app.response_class(status=204)
     return response
-    
+
 
 @rest_api.route('solved-board/one', methods=['POST'])
 def create_one_solved_board():
@@ -98,7 +148,11 @@ def create_one_solved_board():
     else:
         raise(InvalidUsage("Not solvable: {}".format(result), 400))
 
-def solve_board_worker(board):
+
+def solve_board_worker(board, job_id):
+    global job_info
+    global job_info_lock
+
     start_time = time.time()
 
     board_solutions = []
@@ -108,23 +162,44 @@ def solve_board_worker(board):
 
     asyncSolveCompleted = False
 
+    # Handler for solving progress
+    def on_solver_progress(progress_percent, num_solutions):
+        global job_info
+        global job_info_lock
+        nonlocal job_id
+        with job_info_lock:
+            job_info[job_id]["progress_percent"] = progress_percent
+            job_info[job_id]["num_solutions"] = num_solutions
+
     # Handler for solving finished: captures the results.
     def on_solver_finished(result, solutions):
+        global job_info
+        global job_info_lock
+        nonlocal job_id
         nonlocal asyncSolveCompleted
         asyncSolveCompleted = True
         nonlocal solver_result
         solver_result = result
         nonlocal board_solutions
         board_solutions = solutions
+        if result == lsdk.SolverResult.ASYNC_SOLVED_CANCELLED:
+            # Job has been cancelled externally - cleans-up.
+            executor = get_executor()
+            with job_info_lock:
+                job_info.pop(job_id)
+                executor.futures.pop(job_id)
 
     solver.asyncSolveForGood(
          board,
-         # TODO store progress info on auxiliary structure
-         None,  # Does nothing on progress (for now)
+         on_solver_progress,
          on_solver_finished
     )
 
     while not asyncSolveCompleted:
+        with job_info_lock:
+            if job_info[job_id]["cancel"]:
+                # Job has been cancelled externally - stops and cleans-up.
+                solver.cancelAsyncSolving()
         time.sleep(0.1)
 
     finish_time = time.time()

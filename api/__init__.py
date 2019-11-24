@@ -26,14 +26,13 @@ executor = None
 # Lock to guarantee single lazy instantiation of executor
 executor_lock = threading.Lock()
 
-def create_executor_if_needed():
+def get_executor():
     # Lazy instatiantion of the executor
     global executor
     global executor_lock
-    executor_lock.acquire()
-    if not executor:
-        executor = Executor(current_app)
-    executor_lock.release()
+    with executor_lock:
+        if not executor:
+            executor = Executor(current_app)
     return executor
 
 

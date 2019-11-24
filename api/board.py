@@ -1,5 +1,5 @@
 from api import (
-    create_executor_if_needed,
+    get_executor,
     rest_api, InvalidUsage
 )
 from flask import (
@@ -15,7 +15,7 @@ import py_libsudoku as lsdk
     
 @rest_api.route("board/gen-status/<job_id>")
 def get_gen_status(job_id):
-    executor = create_executor_if_needed()
+    executor = get_executor()
     fut = None
     try:
         fut = executor.futures._futures[job_id]
@@ -54,7 +54,7 @@ def gen_board_async():
     elif dif_level == 2:
         board_level = lsdk.PuzzleDifficulty.MEDIUM
 
-    executor = create_executor_if_needed()
+    executor = get_executor()
 
     # Invokes the generation worker giving a unique id to index the
     # corresponding future. This unique id will then be passed to the

@@ -136,7 +136,7 @@ def get_solve_status(job_id):
 def cancel_async_solve(job_id):
     """Cancels an ongoing search for all the solutions of a board.
     ---
-    post:
+    delete:
         tags:
           - Solved Boards
         summary: Cancels an ongoing search for all the solutions of a board.

@@ -15,13 +15,28 @@ spec = APISpec(
 )
 
 from api_runner import app
-from api.board import get_board_state_flags
-from api.board_schemas import BoardSchema, BoardFlagsSchema
-from api.solved_board import create_solved_board
+from api.board import (
+    gen_board_async, get_gen_status,
+    get_board_state_flags
+)
+from api.solved_board import (
+    create_all_solved_boards_async,
+    create_one_solved_board, 
+    get_solve_status, cancel_async_solve
+)
+from api.schemas import (
+    BoardSchema, BoardFlagsSchema,
+    SolvedBoardSchema, BoardSolutionsSchema
+)
 
 with app.test_request_context():
     spec.path(view=get_board_state_flags)
-    spec.path(view=create_solved_board)
+    spec.path(view=create_one_solved_board)
+    spec.path(view=create_all_solved_boards_async)
+    spec.path(view=get_solve_status)
+    spec.path(view=cancel_async_solve)
+    spec.path(view=gen_board_async)
+    spec.path(view=get_gen_status)
 
 import json
 with open("swagger.json", "w") as f:

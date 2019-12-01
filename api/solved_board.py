@@ -26,6 +26,27 @@ job_info_lock = threading.Lock()
 
 @rest_api.route('solved-board/all', methods=['POST'])
 def create_all_solved_boards_async():
+    """Starts a search for all the solutions for a given board.
+    ---
+    post:
+        tags:
+          - Solved Boards
+        summary: Starts a search for all the solutions for a given board 
+                 (may take a while).
+        requestBody:
+            description: The board to be solved
+            required: true
+            content:
+              application/json:
+                schema: BoardSchema
+        responses:
+            202:
+              description: The search has been started. The url for querying the
+                           search progress is returned in the "location" header
+                           of the response.
+            400:
+              description: Error detail in "message".
+    """
     global job_info
     global job_info_lock
     board = lsdk.Board()
@@ -56,6 +77,35 @@ def create_all_solved_boards_async():
 
 @rest_api.route("solved-board/all/status/<job_id>")
 def get_solve_status(job_id):
+    """Returns the status of a search for all the solutions of a given
+       board.
+    ---
+    post:
+        tags:
+          - Solved Boards
+        summary: Starts a search for all the solutions for a given board 
+                 (may take a while).
+        parameters:
+          - name: job_id
+            in: path
+            required: true
+            description: the id of the search solutions job
+            schema:
+              type: string
+        responses:
+            200:
+              description: If the search is not finished returns a
+                           json with the fields "progress_percent" and
+                           "num_solutions" for the progress percentage
+                           and the number of solutions found so far. 
+                           If the search is finished, returns a json with
+                           the structure below.
+              content:
+                application/json:
+                  schema: BoardSolutionsSchema
+            404:
+              description: The job_id doesn't refer to a known job.
+    """
     global job_info
     global job_info_lock
     executor = get_executor()
@@ -128,7 +178,7 @@ def create_one_solved_board():
               description: A solution for the given board
               content:
                 application/json:
-                  schema: BoardSchema
+                  schema: SolvedBoardSchema
             400:
               description: Error detail in "message".
     """
@@ -205,16 +255,19 @@ def solve_board_worker(board, job_id):
     finish_time = time.time()
 
     # Set future result
-    solved_boards = {}
-    solved_boards["board_count"] = len(board_solutions)
-    for n in range(1, len(board_solutions)+1):
-        solved_boards[f"board#{n}"] =  [val for val in board_solutions[n-1]]
+    solved_boards = []
+    for n in range(0, len(board_solutions)):
+        # Board is not JSON serializable.
+        # That's the reason for the list compreheension.
+        solved_boards.append([val for val in board_solutions[n]])
+    status = (
+        "Cancelled" if solver_result == lsdk.SolverResult.ASYNC_SOLVED_CANCELLED
+        else "Ok"
+    )
     fut_result = {
         # SolverResult is not JSON serializable.
         # That's the reason for the str explicit conversion.
-        "status": str(solver_result),
-        # Board is not JSON serializable.
-        # That's the reason for the list compreheension
+        "status": status,
         "solved_boards": solved_boards,
         "solve_time": finish_time - start_time
     }

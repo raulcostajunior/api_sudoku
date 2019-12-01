@@ -15,7 +15,7 @@ class BoardFlagsSchema(Schema):
 class SolvedBoardSchema(Schema):
     board = fields.List(
         fields.Integer(validate=validate.Range(min=0,  max=9)),
-        validate=validate.Length(81)
+        validate=validate.Length(81, 81)
     )
 
 class BoardSolutionsSchema(Schema):
@@ -24,6 +24,17 @@ class BoardSolutionsSchema(Schema):
     )
     solved_boards = fields.List(
         fields.Nested(SolvedBoardSchema), 
+    )
+    status = fields.String(
+        description='Either "Cancelled" or "Ok".',
+    )
+
+class GeneratedBoardSchema(Schema):
+    board = fields.List(
+        fields.Nested(SolvedBoardSchema), 
+    )
+    gen_time = fields.Float(
+        description="Elapsed time, in seconds, for generating the board.",
     )
     status = fields.String(
         description='Either "Cancelled" or "Ok".',

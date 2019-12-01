@@ -195,7 +195,7 @@ def gen_board_worker(difficulty_level):
         "status": str(gen_result),
         # Board is not JSON serializable.
         # That's the reason for the list compreheension
-        "gen_board": [val for val in gen_board],
+        "board": [val for val in gen_board],
         "gen_time": finish_time - start_time
     }
 

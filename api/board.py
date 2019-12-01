@@ -15,6 +15,31 @@ import py_libsudoku as lsdk
     
 @rest_api.route("board/gen-status/<job_id>")
 def get_gen_status(job_id):
+    """Retrieves the status of a generate board request given its job id.
+    ---
+    post:
+        tags:
+          - Boards
+        summary: Retrieves the status of a generate board request given its job id.
+        parameters:
+          - name: job_id
+            in: path
+            required: true
+            description: the id of the generate board job.
+            schema:
+              type: string
+        responses:
+            200:
+              description: If the generation is not finished returns a
+                           json with the fields "current_step" and
+                           "total_steps". If the board has been generated,
+                           returns the content described below.
+              content:
+                application/json:
+                  schema: BoardSchema
+            404:
+              description: The job_id doesn't refer to a known job.
+    """
     executor = get_executor()
     fut = None
     try:
@@ -35,6 +60,28 @@ def get_gen_status(job_id):
 
 @rest_api.route("board/", methods=["POST"])
 def gen_board_async():
+    """Starts the generation of a Board with a given difficulty level.
+    ---
+    post:
+        tags:
+          - Boards
+        summary: Starts the generation of a Board with a given difficulty level.
+        parameters:
+          - name: difficulty-level
+            in: query
+            description: The difficulty level. Possible values are 1 (easy), 2
+                         (medium) or 3 (difficult).
+            required: true
+            schema:
+              type: integer
+        responses:
+            202:
+              description: The generation has been started. The url for querying the
+                           search progress is returned in the "location" header
+                           of the response.
+            400:
+              description: Error detail in "message".
+    """
     try:
         dif_level = int(request.args.get("difficulty-level"))
     except:

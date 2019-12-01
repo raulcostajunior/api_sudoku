@@ -83,8 +83,8 @@ def get_solve_status(job_id):
     post:
         tags:
           - Solved Boards
-        summary: Starts a search for all the solutions for a given board 
-                 (may take a while).
+        summary: Returns the status of a search for all the solutions of a given
+                 board.
         parameters:
           - name: job_id
             in: path
@@ -134,6 +134,26 @@ def get_solve_status(job_id):
 
 @rest_api.route("solved-board/all/<job_id>", methods=['DELETE'])
 def cancel_async_solve(job_id):
+    """Cancels an ongoing search for all the solutions of a board.
+    ---
+    post:
+        tags:
+          - Solved Boards
+        summary: Cancels an ongoing search for all the solutions of a board.
+        parameters:
+          - name: job_id
+            in: path
+            description: The id of the search job to be cancelled.
+            required: true
+            schema:
+              type: string
+        responses:
+            204:
+              description: The search has been cancelled.
+            404:
+              description: The given job_id does not correspond to a known
+                           ongoing search job.
+    """
     global job_info
     global job_info_lock
     executor = get_executor()

@@ -36,7 +36,7 @@ def get_gen_status(job_id):
                            returns the content described below.
               content:
                 application/json:
-                  schema: BoardSchema
+                  schema: GeneratedBoardSchema
             404:
               description: The job_id doesn't refer to a known job.
     """

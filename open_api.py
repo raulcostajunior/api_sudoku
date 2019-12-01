@@ -26,7 +26,8 @@ from api.solved_board import (
 )
 from api.schemas import (
     BoardSchema, BoardFlagsSchema,
-    SolvedBoardSchema, BoardSolutionsSchema
+    SolvedBoardSchema, BoardSolutionsSchema,
+    GeneratedBoardSchema
 )
 
 with app.test_request_context():

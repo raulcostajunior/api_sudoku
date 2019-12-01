@@ -80,7 +80,7 @@ def get_solve_status(job_id):
     """Returns the status of a search for all the solutions of a given
        board.
     ---
-    post:
+    get:
         tags:
           - Solved Boards
         summary: Returns the status of a search for all the solutions of a given

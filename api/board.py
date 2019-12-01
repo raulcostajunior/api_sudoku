@@ -17,7 +17,7 @@ import py_libsudoku as lsdk
 def get_gen_status(job_id):
     """Retrieves the status of a generate board request given its job id.
     ---
-    post:
+    get:
         tags:
           - Boards
         summary: Retrieves the status of a generate board request given its job id.

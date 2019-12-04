@@ -26,7 +26,7 @@ class BoardSolutionsSchema(Schema):
         fields.Nested(SolvedBoardSchema), 
     )
     status = fields.String(
-        description='Either "Cancelled" or "Ok".',
+        description='One of the py-sudoku.SolverStatus values.',
     )
 
 class GeneratedBoardSchema(Schema):
@@ -37,5 +37,5 @@ class GeneratedBoardSchema(Schema):
         description="Elapsed time, in seconds, for generating the board.",
     )
     status = fields.String(
-        description='Either "Cancelled" or "Ok".',
+        description='One of the py-sudoku.GeneratorStatus values.',
     )

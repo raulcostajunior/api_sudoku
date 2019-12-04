@@ -280,14 +280,10 @@ def solve_board_worker(board, job_id):
         # Board is not JSON serializable.
         # That's the reason for the list compreheension.
         solved_boards.append([val for val in board_solutions[n]])
-    status = (
-        "Cancelled" if solver_result == lsdk.SolverResult.ASYNC_SOLVED_CANCELLED
-        else "Ok"
-    )
     fut_result = {
         # SolverResult is not JSON serializable.
         # That's the reason for the str explicit conversion.
-        "status": status,
+        "status": str(solver_result),
         "solved_boards": solved_boards,
         "solve_time": finish_time - start_time
     }

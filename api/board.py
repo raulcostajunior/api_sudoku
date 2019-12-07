@@ -12,7 +12,7 @@ import time
 import uuid
 
 import py_libsudoku as lsdk
-    
+
 @rest_api.route("board/gen-status/<job_id>")
 def get_gen_status(job_id):
     """Retrieves the status of a generate board request given its job id.
@@ -47,7 +47,7 @@ def get_gen_status(job_id):
     except KeyError:
         return make_response (
             jsonify(
-                {"status": "no board generation for job-id '{}'".format(
+                {"message": "no board generation for job-id '{}'".format(
                     job_id)},
             ), 404
         )
@@ -74,6 +74,7 @@ def gen_board_async():
             required: true
             schema:
               type: integer
+              enum: [1, 2, 3]
         responses:
             202:
               description: The generation has been started. The url for querying the
@@ -154,8 +155,8 @@ def get_board_state_flags():
 
 
 def gen_board_worker(difficulty_level):
-    """Generates a board with the given difficulty_level. 
-    Returns a dictionary with the following keys: 
+    """Generates a board with the given difficulty_level.
+    Returns a dictionary with the following keys:
     . "gen_result": one of the values of GeneratorResult
     . "gen_board": the generated board if any
     . "start_time"

@@ -21,7 +21,7 @@ from api.board import (
 )
 from api.solved_board import (
     create_all_solved_boards_async,
-    create_one_solved_board, 
+    create_one_solved_board,
     get_solve_status, cancel_async_solve
 )
 from api.schemas import (
@@ -40,7 +40,7 @@ with app.test_request_context():
     spec.path(view=get_gen_status)
 
 import json
-with open("swagger.json", "w") as f:
+with open("static/swagger.json", "w") as f:
     json.dump(spec.to_dict(), f)
 
 

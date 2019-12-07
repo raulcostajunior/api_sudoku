@@ -31,7 +31,7 @@ def create_all_solved_boards_async():
     post:
         tags:
           - Solved Boards
-        summary: Starts a search for all the solutions for a given board 
+        summary: Starts a search for all the solutions for a given board
                  (may take a while).
         requestBody:
             description: The board to be solved
@@ -97,7 +97,7 @@ def get_solve_status(job_id):
               description: If the search is not finished returns a
                            json with the fields "progress_percent" and
                            "num_solutions" for the progress percentage
-                           and the number of solutions found so far. 
+                           and the number of solutions found so far.
                            If the search is finished, returns a json with
                            the structure below.
               content:
@@ -115,7 +115,7 @@ def get_solve_status(job_id):
     except KeyError:
         return make_response(
             jsonify(
-                {"status": "no board solving for job-id '{}'".format(
+                {"message": "no board solving for job-id '{}'".format(
                     job_id)},
             ), 404
          )
@@ -163,14 +163,14 @@ def cancel_async_solve(job_id):
     except KeyError:
         return make_response(
             jsonify(
-                {"status": "no board solving to cancel for job-id '{}'".format(
+                {"message": "no board solving to cancel for job-id '{}'".format(
                     job_id)}), 404
         )
     if not fut.done():
         # Marks the job to be stopped as soon as possible by the worker.
         with job_info_lock:
             job_info[job_id]["cancel"] = True
-    else: 
+    else:
         # The job has been done but a cancel has been invoked, there's a
         # chance that no request for its result will come - do the clean-
         # up from here.
@@ -181,7 +181,7 @@ def cancel_async_solve(job_id):
 
 @rest_api.route('solved-board/one', methods=['POST'])
 def create_one_solved_board():
-    """Returns one solution for a given board.
+    """Finds one solution for a given board (if possible).
     ---
     post:
         tags:

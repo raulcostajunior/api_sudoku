@@ -23,7 +23,7 @@ class BoardSolutionsSchema(Schema):
         description="Elapsed time, in seconds, for finding all solutions.",
     )
     solved_boards = fields.List(
-        fields.Nested(SolvedBoardSchema), 
+        fields.Nested(SolvedBoardSchema),
     )
     status = fields.String(
         description='One of the py-sudoku.SolverStatus values.',
@@ -31,7 +31,8 @@ class BoardSolutionsSchema(Schema):
 
 class GeneratedBoardSchema(Schema):
     board = fields.List(
-        fields.Nested(SolvedBoardSchema), 
+        fields.Integer(validate=validate.Range(min=0,  max=9)),
+        validate=validate.Length(81, 81)
     )
     gen_time = fields.Float(
         description="Elapsed time, in seconds, for generating the board.",

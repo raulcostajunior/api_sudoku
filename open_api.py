@@ -3,13 +3,13 @@ from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
 
 spec = APISpec(
-    title="py_libsudoku",
+    title="py_libsudoku api",
     version="1.0.0",
     openapi_version="3.0.2",
     info=dict(
         description=
-           "Python extension for generating and solving Sudoku puzzles. "
-           "Based on C++ [libsudoku](https://github.com/raulcostajunior/libsudoku)."
+           "Api for generating and solving Sudoku puzzles. "
+           "Based on [py-libsudoku](https://pypi.org/project/py-libsudoku)."
     ),
     plugins=[FlaskPlugin(), MarshmallowPlugin()],
 )

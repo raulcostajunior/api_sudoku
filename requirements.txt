@@ -1,5 +1,6 @@
 aniso8601==8.0.0
 Click==7.0
+cmake
 Flask==1.1.1
 Flask-Executor==0.9.3
 itsdangerous==1.1.0

@@ -118,14 +118,14 @@ def gen_board_async():
     return response
 
 
-@rest_api.route("board/state-flags")
-def get_board_state_flags():
-    """Retrieves the state flags of a given board (the board goes in JSON format in the body).
+@rest_api.route("board/status")
+def get_board_status():
+    """Retrieves the status of a given board (the board goes in JSON format in the body).
     ---
     get:
         tags:
           - Boards
-        summary: Retrieves the state flags of a given board
+        summary: Retrieves the status of a given board.
         requestBody:
             description: The board to be evaluated
             required: true
@@ -134,20 +134,22 @@ def get_board_state_flags():
                 schema: BoardSchema
         responses:
             200:
-              description: Values of the state flags
+              description: The status of the board.
               content:
                 application/json:
-                  schema: BoardFlagsSchema
+                  schema: BoardStatusSchema
             400:
               description: Error detail in "message".
     """
     try:
         body = request.get_json()
         b = lsdk.Board(body["board"])
+        invalid_positions = b.getInvalidPositions()
         d = {
             "isValid": b.isValid,
             "isEmpty": b.isEmpty,
             "isComplete": b.isComplete,
+            "invalidPositions": [(p[0], p[1]) for p in invalid_positions]
         }
         return jsonify(d)
     except Exception as e:

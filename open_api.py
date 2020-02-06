@@ -4,7 +4,7 @@ from apispec_webframeworks.flask import FlaskPlugin
 
 spec = APISpec(
     title="py_libsudoku api",
-    version="1.0.0",
+    version="1.0.2",
     openapi_version="3.0.2",
     info=dict(
         description=
@@ -17,7 +17,7 @@ spec = APISpec(
 from api_runner import app
 from api.board import (
     gen_board_async, get_gen_status,
-    get_board_state_flags
+    get_board_status
 )
 from api.solved_board import (
     create_all_solved_boards_async,
@@ -25,13 +25,13 @@ from api.solved_board import (
     get_solve_status, cancel_async_solve
 )
 from api.schemas import (
-    BoardSchema, BoardFlagsSchema,
-    SolvedBoardSchema, BoardSolutionsSchema,
-    GeneratedBoardSchema
+    BoardSchema, BoardPositionSchema,
+    BoardStatusSchema, SolvedBoardSchema,
+    BoardSolutionsSchema, GeneratedBoardSchema
 )
 
 with app.test_request_context():
-    spec.path(view=get_board_state_flags)
+    spec.path(view=get_board_status)
     spec.path(view=create_one_solved_board)
     spec.path(view=create_all_solved_boards_async)
     spec.path(view=get_solve_status)

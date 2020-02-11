@@ -4,7 +4,7 @@ from apispec_webframeworks.flask import FlaskPlugin
 
 spec = APISpec(
     title="py_libsudoku api",
-    version="1.0.2",
+    version="1.0.4",
     openapi_version="3.0.2",
     info=dict(
         description=

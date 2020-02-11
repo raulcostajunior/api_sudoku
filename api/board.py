@@ -118,11 +118,11 @@ def gen_board_async():
     return response
 
 
-@rest_api.route("board/status")
+@rest_api.route("board/status", methods=["POST"])
 def get_board_status():
     """Retrieves the status of a given board (the board goes in JSON format in the body).
     ---
-    get:
+    post:
         tags:
           - Boards
         summary: Retrieves the status of a given board.

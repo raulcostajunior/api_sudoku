@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, make_response
+from flask_cors import CORS
 from api import rest_api, InvalidUsage
 
 app = Flask(
@@ -6,6 +7,7 @@ app = Flask(
     static_url_path='',
     static_folder='static'
 )
+CORS(app)
 app.register_blueprint(rest_api, url_prefix='/v1')
 
 @app.errorhandler(InvalidUsage)

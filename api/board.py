@@ -67,7 +67,7 @@ def gen_board_async():
           - Boards
         summary: Starts the generation of a Board with a given difficulty level.
         parameters:
-          - name: difficulty-level
+          - name: difficultyLevel
             in: query
             description: The difficulty level. Possible values are 1 (easy), 2
                          (medium) or 3 (difficult).
@@ -84,11 +84,11 @@ def gen_board_async():
               description: Error detail in "message".
     """
     try:
-        dif_level = int(request.args.get("difficulty-level"))
+        dif_level = int(request.args.get("difficultyLevel"))
     except:
         raise (
             InvalidUsage(
-                "Bad request: 'difficulty-level' parameter required with value in [1, 2, 3]."
+                "Bad request: 'difficultyLevel' parameter required with value in [1, 2, 3]."
             )
         )
     if dif_level < 1 or dif_level > 3:

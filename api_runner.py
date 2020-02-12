@@ -7,7 +7,7 @@ app = Flask(
     static_url_path='',
     static_folder='static'
 )
-CORS(app, expose_headers=['location'])
+CORS(app, expose_headers=['Location'])
 app.register_blueprint(rest_api, url_prefix='/v1')
 
 @app.errorhandler(InvalidUsage)

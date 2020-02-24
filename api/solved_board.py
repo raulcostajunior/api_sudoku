@@ -97,7 +97,7 @@ def get_solve_status(job_id):
               description: If the search is not finished returns a json
                            with the fields "cancel_url", "progress_percent"
                            and "num_solutions". "cancel_url" is the url the
-                           the client should send a "DELETE" request in order
+                           client should send a "DELETE" request to in order
                            to cancel the search for all solutions.
                            "progress_percent" is the progress percentage
                            and and "num_solutions" is the number of solutions

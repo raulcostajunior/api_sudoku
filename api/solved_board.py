@@ -94,10 +94,14 @@ def get_solve_status(job_id):
               type: string
         responses:
             200:
-              description: If the search is not finished returns a
-                           json with the fields "progress_percent" and
-                           "num_solutions" for the progress percentage
-                           and the number of solutions found so far.
+              description: If the search is not finished returns a json
+                           with the fields "cancel_url", "progress_percent"
+                           and "num_solutions". "cancel_url" is the url the
+                           the client should send a "DELETE" request in order
+                           to cancel the search for all solutions.
+                           "progress_percent" is the progress percentage
+                           and and "num_solutions" is the number of solutions
+                           found so far.
                            If the search is finished, returns a json with
                            the structure below.
               content:
@@ -121,6 +125,11 @@ def get_solve_status(job_id):
          )
     if not fut.done():
         resp = {"status":"solving"}
+        resp["cancel_url"] = url_for(
+                                 'api.cancel_async_solve',
+                                 job_id=job_id,
+                                 _external=True
+                             )
         with job_info_lock:
             resp["progress_percent"] = job_info[job_id]["progress_percent"]
             resp["num_solutions"] = job_info[job_id]["num_solutions"]

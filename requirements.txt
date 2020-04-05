@@ -1,6 +1,6 @@
 aniso8601==8.0.0
 Click==7.0
-cmake
+cmake==3.16.3
 Flask==1.1.1
 Flask-Cors==3.0.8
 Flask-Executor==0.9.3

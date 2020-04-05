@@ -1,6 +1,6 @@
 from api import (
-  get_executor,
-  rest_api, InvalidUsage
+    get_executor,
+    rest_api, InvalidUsage
 )
 from flask import (
     current_app, jsonify, make_response,
@@ -38,7 +38,7 @@ def create_all_solved_boards_async():
             required: true
             content:
               application/json:
-                schema: BoardSchema
+                schema: SolveAllSchema
         responses:
             202:
               description: The search has been started. The url for querying the
@@ -52,7 +52,8 @@ def create_all_solved_boards_async():
     board = lsdk.Board()
     try:
         body = request.get_json()
-        board = lsdk.Board(body["board"]) # Board to solve
+        board = lsdk.Board(body["board"])  # Board to solve
+        max_solutions = body["maxSolutions"]
     except Exception as e:
         raise(InvalidUsage("Bad request: {}".format(str(e)), 400))
 
@@ -64,10 +65,10 @@ def create_all_solved_boards_async():
     location_value = ""
     current_job_id = str(uuid.uuid4())
     with job_info_lock:
-        info = {"progress_percent":0.0, "num_solutions":0, "cancel":False}
+        info = {"progress_percent": 0.0, "num_solutions": 0, "cancel": False}
         job_info[current_job_id] = info
     executor.submit_stored(current_job_id,
-                           solve_board_worker, board, current_job_id)
+                           solve_board_worker, board, max_solutions, current_job_id)
 
     location_value = url_for('api.get_solve_status', job_id=current_job_id)
     response = current_app.response_class(status=202)
@@ -122,14 +123,14 @@ def get_solve_status(job_id):
                 {"message": "no board solving for job-id '{}'".format(
                     job_id)},
             ), 404
-         )
+        )
     if not fut.done():
-        resp = {"status":"solving"}
+        resp = {"status": "solving"}
         resp["cancel_url"] = url_for(
-                                 'api.cancel_async_solve',
-                                 job_id=job_id,
-                                 _external=True
-                             )
+            'api.cancel_async_solve',
+            job_id=job_id,
+            _external=True
+        )
         with job_info_lock:
             resp["progress_percent"] = job_info[job_id]["progress_percent"]
             resp["num_solutions"] = job_info[job_id]["num_solutions"]
@@ -211,24 +212,24 @@ def create_one_solved_board():
             400:
               description: Error detail in "message".
     """
-    s = lsdk.Board() # Board to hold the solution
+    s = lsdk.Board()  # Board to hold the solution
     result = lsdk.SolverResult.NO_ERROR
 
     try:
         body = request.get_json()
-        b = lsdk.Board(body["board"]) # Board to solve
+        b = lsdk.Board(body["board"])  # Board to solve
         solver = lsdk.Solver()
         result = solver.solve(b, s)
     except Exception as e:
         raise(InvalidUsage("Bad request: {}".format(str(e)), 400))
 
     if result == lsdk.SolverResult.NO_ERROR:
-        return jsonify({"board" : [v for v in s]})
+        return jsonify({"board": [v for v in s]})
     else:
         raise(InvalidUsage("Not solvable: {}".format(result), 400))
 
 
-def solve_board_worker(board, job_id):
+def solve_board_worker(board, max_solutions, job_id):
     global job_info
     global job_info_lock
 
@@ -269,9 +270,10 @@ def solve_board_worker(board, job_id):
                 executor.futures.pop(job_id)
 
     solver.asyncSolveForGood(
-         board,
-         on_solver_progress,
-         on_solver_finished
+        board,
+        on_solver_progress,
+        on_solver_finished,
+        max_solutions
     )
 
     while not asyncSolveCompleted:
@@ -298,4 +300,3 @@ def solve_board_worker(board, job_id):
     }
 
     return fut_result
-

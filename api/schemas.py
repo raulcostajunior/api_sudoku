@@ -1,5 +1,6 @@
 from marshmallow import Schema, fields, validate
 
+
 class BoardSchema(Schema):
     board = fields.List(
         fields.Integer(validate=validate.Range(min=0,  max=9)),
@@ -7,11 +8,21 @@ class BoardSchema(Schema):
         validate=validate.Length(1, 81)
     )
 
+
+class SolveAllSchema(BoardSchema):
+    maxSolutions = fields.Integer(
+        validate=validate.Range(min=1),
+        description="Maximum number of solutions to find",
+        required=True
+    )
+
+
 class BoardPositionSchema(Schema):
     boardPosition = fields.List(
         fields.Integer(validate=validate.Range(min=0, max=8)),
-        validate=validate.Length(2,2)
+        validate=validate.Length(2, 2)
     )
+
 
 class BoardStatusSchema(Schema):
     isValid = fields.Bool(description="Any invalid or repeated value?")
@@ -21,14 +32,16 @@ class BoardStatusSchema(Schema):
         fields.Nested(BoardPositionSchema),
         description="List of coordinates (line, column) of invalid values in "
                     "the board.",
-        validate=validate.Length(1,81)
+        validate=validate.Length(1, 81)
     )
+
 
 class SolvedBoardSchema(Schema):
     board = fields.List(
         fields.Integer(validate=validate.Range(min=0,  max=9)),
         validate=validate.Length(81, 81)
     )
+
 
 class BoardSolutionsSchema(Schema):
     solve_time = fields.Float(
@@ -40,6 +53,7 @@ class BoardSolutionsSchema(Schema):
     status = fields.String(
         description='One of the py-sudoku.SolverStatus values.',
     )
+
 
 class GeneratedBoardSchema(Schema):
     board = fields.List(

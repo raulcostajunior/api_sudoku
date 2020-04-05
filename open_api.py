@@ -21,7 +21,7 @@ from apispec_webframeworks.flask import FlaskPlugin
 
 spec = APISpec(
     title="py_libsudoku api",
-    version="1.0.4",
+    version="1.0.6",
     openapi_version="3.0.2",
     info=dict(
         description="Api for generating and solving Sudoku puzzles. "
@@ -42,4 +42,3 @@ with app.test_request_context():
 
 with open("static/swagger.json", "w") as f:
     json.dump(spec.to_dict(), f)
-

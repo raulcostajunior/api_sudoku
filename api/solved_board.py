@@ -34,7 +34,7 @@ def create_all_solved_boards_async():
         summary: Starts a search for all the solutions for a given board
                  (may take a while).
         requestBody:
-            description: The board to be solved
+            description: The board to be solved and the max. number of solutions to return.
             required: true
             content:
               application/json:
@@ -96,15 +96,17 @@ def get_solve_status(job_id):
         responses:
             200:
               description: If the search is not finished returns a json
-                           with the fields "cancel_url", "progress_percent"
-                           and "num_solutions". "cancel_url" is the url the
-                           client should send a "DELETE" request to in order
-                           to cancel the search for all solutions.
-                           "progress_percent" is the progress percentage
-                           and and "num_solutions" is the number of solutions
+                           with the fields "cancel_url", "progress_percent",
+                           "num_unsolvables" and "num_solutions". "cancel_url"
+                           is the url the client should send a "DELETE" request
+                           to in order to cancel the search for all solutions.
+                           "progress_percent" is the progress percentage.
+                           "num_unsolvables" is the number of intermediary
+                           unsolvable boards found during the search.
+                           "num_solutions" is the number of solutions
                            found so far.
-                           If the search is finished, returns a json with
-                           the structure below.
+                           If the search is finished, a json with the structure
+                           below is returned.
               content:
                 application/json:
                   schema: BoardSolutionsSchema
@@ -133,6 +135,7 @@ def get_solve_status(job_id):
         )
         with job_info_lock:
             resp["progress_percent"] = job_info[job_id]["progress_percent"]
+            resp["num_unsolvables"] = job_info[job_id]["num_unsolvables"]
             resp["num_solutions"] = job_info[job_id]["num_solutions"]
         return jsonify(resp)
     else:
@@ -243,12 +246,13 @@ def solve_board_worker(board, max_solutions, job_id):
     asyncSolveCompleted = False
 
     # Handler for solving progress
-    def on_solver_progress(progress_percent, num_solutions):
+    def on_solver_progress(progress_percent, num_unsolvables, num_solutions):
         global job_info
         global job_info_lock
         nonlocal job_id
         with job_info_lock:
             job_info[job_id]["progress_percent"] = progress_percent
+            job_info[job_id]["num_unsolvables"] = num_unsolvables
             job_info[job_id]["num_solutions"] = num_solutions
 
     # Handler for solving finished: captures the results.

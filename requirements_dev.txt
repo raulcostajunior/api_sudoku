@@ -19,7 +19,7 @@ MarkupSafe==1.1.1
 marshmallow==3.2.1
 mccabe==0.6.1
 pathspec==0.6.0
-py-libsudoku==1.0.22
+py-libsudoku==1.0.24
 pycodestyle==2.5.0
 pylint==2.4.3
 pytz==2019.3

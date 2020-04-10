@@ -21,7 +21,7 @@ from apispec_webframeworks.flask import FlaskPlugin
 
 spec = APISpec(
     title="py_libsudoku api",
-    version="1.0.6",
+    version="1.0.8",
     openapi_version="3.0.2",
     info=dict(
         description="Api for generating and solving Sudoku puzzles. "

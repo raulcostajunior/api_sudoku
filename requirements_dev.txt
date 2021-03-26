@@ -23,7 +23,7 @@ py-libsudoku==1.0.24
 pycodestyle==2.5.0
 pylint==2.4.3
 pytz==2019.3
-PyYAML==5.1.2
+PyYAML==5.4
 regex==2019.11.1
 rope==0.14.0
 six==1.12.0

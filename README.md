@@ -27,6 +27,8 @@ To run the api using Flask's development server:
 
 The api documentation is browsable from the api root - running locally on Flask's development server with its default port, the api documentation can be accessed at http://127.0.0.1:5000.
 
+<!--
 ## Demo
 
 The api can be accessed at http://api-sudoku.herokuapp.com. The files **Procfile** and **runtime.txt** are specific to the Heroku deployment. **cmake** had to be added as dependency to **requirements.txt** for the Heroku deployment to work.
+-->

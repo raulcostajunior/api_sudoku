@@ -29,5 +29,5 @@ rope==0.14.0
 six==1.12.0
 toml==0.10.0
 typed-ast==1.4.0
-Werkzeug==0.16.0
+Werkzeug==2.2.3
 wrapt==1.11.2

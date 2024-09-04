@@ -2,7 +2,7 @@ aniso8601==8.0.0
 Click==7.0
 cmake
 Flask==2.2.5
-Flask-Cors==3.0.9
+Flask-Cors==5.0.0
 Flask-Executor==0.9.3
 itsdangerous==1.1.0
 Jinja2==2.11.3
